@@ -1,5 +1,5 @@
-import type { Cell, Grid } from "./types";
-
+import type { Cell, Grid, Position, Direction, PlacedWord, PlaceResult } from "./types";
+import { STEPS } from "./types";
 export const EMPTY_CELL: Cell = ".";
 
 export const createEmptyGrid = (rows: number, cols: number): Grid => {
@@ -21,6 +21,55 @@ export const printGrid = (grid: Grid): void => {
     })
 
     // console.log(grid.data);
+}
+
+export const canPlace = (grid: Grid, word: string, start: Position, direction: Direction): boolean => {
+
+    const { dr, dc } = STEPS[direction];
+
+    for (let i = 0; i < word.length; i++) {
+
+        const row = start.row + dr * i;
+        const col = start.col + dc * i;
+
+        if (row < 0 || col < 0 || row >= grid.rows || col >= grid.cols) {
+            return false;
+        }
+
+        const cell = grid.data[row][col];
+
+        if (cell !== EMPTY_CELL && cell !== word[i]) {
+            return false;
+        }
+
+    }
+
+    return true
+}
+
+export const placeWord = (grid: Grid, word: string, start: Position, direction: Direction): PlaceResult | null => {
+
+    if (!canPlace(grid, word, start, direction)) {
+        return null;
+    }
+
+    const newData = grid.data.map(row => [...row]);
+
+    const { dr, dc } = STEPS[direction];
+
+    for (let i = 0; i < word.length; i++) {
+
+        const row = start.row + dr * i;
+        const col = start.col + dc * i;
+
+        newData[row][col] = word[i];
+    }
+
+    return {
+        grid: { ...grid, data: newData },
+        placed: { word, position: start, direction }
+    };
+
 }
 
 

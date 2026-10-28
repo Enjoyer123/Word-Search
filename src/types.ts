@@ -35,3 +35,7 @@ export type PlacedWord = {
     direction: Direction;
 }
 
+export type PlaceResult = {
+    grid: Grid;
+    placed: PlacedWord;
+};
