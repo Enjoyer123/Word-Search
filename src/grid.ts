@@ -1,5 +1,6 @@
-import type { Cell, Grid, Position, Direction, PlacedWord, PlaceResult } from "./types";
+import type { Cell, Grid, Position, Direction, PlaceResult } from "./types";
 import { STEPS } from "./types";
+import { randomInt, randomDirection, randomLetter } from "./random";
 export const EMPTY_CELL: Cell = ".";
 
 export const createEmptyGrid = (rows: number, cols: number): Grid => {
@@ -72,5 +73,33 @@ export const placeWord = (grid: Grid, word: string, start: Position, direction: 
 
 }
 
+export const placeWordRandomly = (grid: Grid, word: string, maxAttempts: number): PlaceResult | null => {
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        const direction = randomDirection();
+        const start: Position = {
+            row: randomInt(grid.rows),
+            col: randomInt(grid.cols),
+        };
 
+        const result = placeWord(grid, word, start, direction);
+        if (result) {
+            return result;
+        }
+    }
 
+    return null;
+}
+
+export const fillEmptyCells = (grid: Grid): Grid => {
+    const newData = grid.data.map(row => [...row]);
+
+    for (let row = 0; row < grid.rows; row++) {
+        for (let col = 0; col < grid.cols; col++) {
+            if (newData[row][col] === EMPTY_CELL) {
+                newData[row][col] = randomLetter();
+            }
+        }
+    }
+
+    return { ...grid, data: newData };
+}
